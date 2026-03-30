@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usta Eller | Profesyonel Tamir Hizmetleri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        /* Marka Renkleri Değişkenleri */
+        :root {
+            --brand-orange: #D36A28; /* Logodaki ana turuncu */
+            --brand-orange-dark: #b5551f;
+            --brand-grey: #5C5D5F;   /* Logodaki füme gri */
+            --brand-dark: #2a2b2c;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar & Logo Geliştirmeleri */
+        .nav-container {
+            height: 110px; /* Navbar yüksekliği logonun büyüklüğü için artırıldı */
+            transition: all 0.3s ease;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .logo-img {
+            /* Logo boyutu olabildiğince büyük tutuldu */
+            height: 90px; 
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-text {
+            /* Şık ve göze hoş gelen yazı stili */
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            background: linear-gradient(135deg, #2D2E2F 0%, #D36A28 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 640px) {
+            .nav-container { height: 90px; }
+            .logo-img { height: 70px; }
+            .brand-text { font-size: 1.5rem; }
+        }
+
+        /* Hero Background Slider */
+        .hero-slider-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.8) 100%);
+            z-index: 0;
+        }
+
+        /* Fixed Before/After Slider Styles */
+        .comparison-slider {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+            user-select: none;
+        }
+
+        @media (min-width: 640px) {
+            .comparison-slider { height: 400px; }
+        }
+
+        .img-before {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .img-after {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            background: white;
+            z-index: 3;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: var(--brand-orange);
+            color: white;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .label {
+            position: absolute;
+            bottom: 15px;
+            padding: 5px 12px;
+            background: rgba(42, 43, 44, 0.8);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            z-index: 5;
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+
+        .label-before { right: 15px; }
+        .label-after { left: 15px; }
+
+        input[type="range"].slider-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            outline: none;
+            margin: 0;
+            appearance: none;
+            z-index: 10;
+            cursor: ew-resize;
+        }
+
+        input[type="range"].slider-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 44px;
+            height: 1000px;
+            background: transparent;
+        }
+
+        /* Floating WhatsApp Button Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 12px rgba(37, 211, 102, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        .whatsapp-float {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#F8F9FA] text-[#2D2E2F]">
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/905550000000?text=Merhaba,%20tamir%20hizmetleriniz%20hakkında%20bilgi%20almak%20istiyorum." 
+       target="_blank" 
+       class="whatsapp-float fixed bottom-5 right-5 z-[60] bg-[#25D366] text-white w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-2xl sm:text-3xl shadow-2xl transition hover:bg-[#128C7E]">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm nav-container">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+            <div class="flex justify-between items-center h-full">
+                <!-- Logo and Title Side by Side -->
+                <div class="logo-container h-full">
+                    <a href="#anasayfa" class="flex items-center gap-2 sm:gap-4 group">
+                        <img src="images/logoahzır.png" 
+                             alt="Usta Eller Logo" 
+                             class="logo-img group-hover:scale-105">
+                        <div class="flex flex-col justify-center">
+                            <span class="text-2xl sm:text-4xl brand-text">USTA ELLER</span>
+                            <span class="text-[10px] sm:text-xs text-[#D36A28] font-bold tracking-[0.3em] hidden sm:block uppercase opacity-70">Profesyonel Restorasyon</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="hidden lg:flex space-x-10 font-bold items-center">
+                    <a href="#anasayfa" class="text-slate-600 hover:text-[#D36A28] transition border-b-2 border-transparent hover:border-[#D36A28] pb-1">Anasayfa</a>
+                    <a href="#galeri" class="text-slate-600 hover:text-[#D36A28] transition border-b-2 border-transparent hover:border-[#D36A28] pb-1">Projelerimiz</a>
+                    <a href="#hizmetler" class="text-slate-600 hover:text-[#D36A28] transition border-b-2 border-transparent hover:border-[#D36A28] pb-1">Hizmetler</a>
+                    <a href="#iletisim" class="bg-[#D36A28] text-white px-8 py-3 rounded-2xl hover:bg-[#b5551f] transition shadow-lg transform hover:-translate-y-0.5">
+                        TEKLİF AL
+                    </a>
+                </div>
+
+                <!-- Mobile Icon -->
+                <div class="lg:hidden flex items-center gap-4">
+                    <a href="https://wa.me/905550000000" class="text-[#25D366] text-3xl">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="anasayfa" class="relative pt-32 pb-16 sm:pt-48 sm:pb-32 px-4 min-h-[90vh] flex flex-col justify-center items-center overflow-hidden">
+        <div class="hero-slider-container">
+            <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=1920')"></div>
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1920')"></div>
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1454165833767-027508496b41?auto=format&fit=crop&q=80&w=1920')"></div>
+            <div class="hero-overlay"></div>
+        </div>
+
+        <div class="max-w-5xl mx-auto text-center relative z-10 w-full mb-12">
+            <span class="inline-block py-1.5 px-4 rounded-full bg-[#D36A28]/10 text-[#D36A28] text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-6 border border-[#D36A28]/20">
+                Ustalık ve Estetiğin Buluştuğu Nokta
+            </span>
+            <h1 class="text-4xl sm:text-6xl md:text-8xl font-black mb-6 leading-[1.1] text-[#2D2E2F] tracking-tight">
+                Zamana Yenilenleri <br><span class="text-[#D36A28]">Yeniliyoruz</span>
+            </h1>
+            <p class="text-base sm:text-xl text-[#5C5D5F] max-w-2xl mx-auto mb-10 font-medium px-2 leading-relaxed">
+                Mobilyadan dekorasyona, hasarlı her parçayı logonuzdaki o özenli dokunuşla, ilk günkü ruhuna kavuşturuyoruz.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 px-4">
+                <a href="#galeri" class="px-8 py-4.5 bg-[#2D2E2F] text-white rounded-2xl font-bold hover:bg-[#D36A28] transition shadow-2xl text-sm sm:text-base">
+                    Projelerimizi Görün
+                </a>
+                <a href="https://wa.me/905550000000" target="_blank" class="px-8 py-4.5 bg-[#D36A28] text-white rounded-2xl font-bold hover:bg-[#b5551f] transition shadow-xl flex items-center justify-center gap-3 text-sm sm:text-base">
+                    <i class="fab fa-whatsapp text-xl"></i> WhatsApp İletişim
+                </a>
+            </div>
+        </div>
+
+        <!-- Social Icons -->
+        <div class="relative z-10 flex gap-8 items-center mt-auto py-6">
+            <a href="#" class="text-[#5C5D5F] hover:text-[#D36A28] transition-all transform hover:scale-125 text-2xl">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="text-[#5C5D5F] hover:text-[#2D2E2F] transition-all transform hover:scale-125 text-2xl">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="#" class="text-[#5C5D5F] hover:text-red-600 transition-all transform hover:scale-125 text-2xl">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Before/After Gallery -->
+    <section id="galeri" class="py-20 sm:py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-5xl font-black mb-4 text-[#2D2E2F]">Değişime Tanıklık Edin</h2>
+                <div class="w-20 h-1.5 bg-[#D36A28] mx-auto rounded-full mb-6"></div>
+                <p class="text-[#5C5D5F] text-sm sm:text-lg">Çizgiyi kaydırarak öncesi ve sonrası arasındaki farkı görün.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16">
+                <!-- Project 1 -->
+                <div class="group">
+                    <div class="comparison-slider" id="item1">
+                        <img src="https://images.unsplash.com/photo-1581000000000-000000000001?auto=format&fit=crop&q=20&w=800&sepia=1" alt="Tamir Öncesi" class="img-before">
+                        <img src="https://images.unsplash.com/photo-1581000000000-000000000001?auto=format&fit=crop&q=80&w=800" alt="Tamir Sonrası" class="img-after" id="after1">
+                        <div class="label label-before">Eski Hal</div>
+                        <div class="label label-after">Yeni Hal</div>
+                        <div class="slider-handle" id="handle1"></div>
+                        <div class="slider-button" id="button1">
+                            <i class="fas fa-arrows-alt-h"></i>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider-input" oninput="moveSlider(this, 'after1', 'handle1', 'button1')">
+                    </div>
+                    <div class="mt-6 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-xl text-[#2D2E2F]">Antika Koltuk Yenileme</h3>
+                            <p class="text-[#5C5D5F] text-sm">İskelet tamiri ve premium döşeme uygulaması.</p>
+                        </div>
+                        <div class="px-4 py-1 bg-[#D36A28]/10 text-[#D36A28] rounded-full text-xs font-bold">TAMAMLANDI</div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="group">
+                    <div class="comparison-slider" id="item2">
+                        <img src="https://images.unsplash.com/photo-1503387762-592dea58ef23?auto=format&fit=crop&q=20&w=800&grayscale=1" alt="Tamir Öncesi" class="img-before">
+                        <img src="https://images.unsplash.com/photo-1503387762-592dea58ef23?auto=format&fit=crop&q=80&w=800" alt="Tamir Sonrası" class="img-after" id="after2">
+                        <div class="label label-before">Eski Hal</div>
+                        <div class="label label-after">Yeni Hal</div>
+                        <div class="slider-handle" id="handle2"></div>
+                        <div class="slider-button" id="button2">
+                            <i class="fas fa-arrows-alt-h"></i>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider-input" oninput="moveSlider(this, 'after2', 'handle2', 'button2')">
+                    </div>
+                    <div class="mt-6 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-xl text-[#2D2E2F]">Duvar & Dekor Onarımı</h3>
+                            <p class="text-[#5C5D5F] text-sm">Yüzey düzeltme ve boya uygulaması.</p>
+                        </div>
+                        <div class="px-4 py-1 bg-[#D36A28]/10 text-[#D36A28] rounded-full text-xs font-bold">TAMAMLANDI</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="hizmetler" class="py-24 bg-[#F1F3F5]">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
+                <div class="p-10 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 group text-center">
+                    <div class="w-16 h-16 bg-[#D36A28]/10 text-[#D36A28] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[#D36A28] group-hover:text-white transition-colors mx-auto">
+                        <i class="fas fa-hammer text-2xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4 text-[#2D2E2F]">Profesyonel Onarım</h4>
+                    <p class="text-[#5C5D5F] leading-relaxed">Logonuzdaki iğne oyası gibi ince bir işçilikle hasarlı her parçayı detaylıca inceliyor ve onarıyoruz.</p>
+                </div>
+                <div class="p-10 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 group text-center">
+                    <div class="w-16 h-16 bg-[#D36A28]/10 text-[#D36A28] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[#D36A28] group-hover:text-white transition-colors mx-auto">
+                        <i class="fas fa-paint-roller text-2xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4 text-[#2D2E2F]">Restorasyon</h4>
+                    <p class="text-[#5C5D5F] leading-relaxed">Antika eşyalarınızı, orijinal formuna sadık kalarak modern yöntemlerle canlandırıyoruz.</p>
+                </div>
+                <div class="p-10 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 group text-center">
+                    <div class="w-16 h-16 bg-[#D36A28]/10 text-[#D36A28] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[#D36A28] group-hover:text-white transition-colors mx-auto">
+                        <i class="fas fa-magic text-2xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4 text-[#2D2E2F]">Özel Dokunuş</h4>
+                    <p class="text-[#5C5D5F] leading-relaxed">Sadece tamir değil, hayalinizdeki renk ve dokuları eşyalarınıza yansıtan tasarımlar sunuyoruz.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="iletisim" class="py-24 bg-[#2D2E2F] text-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row gap-16 items-center">
+                <div class="md:w-1/2">
+                    <h2 class="text-4xl sm:text-6xl font-black mb-8 leading-tight">Bize Ulaşın,<br><span class="text-[#D36A28]">Fiyat Alın</span></h2>
+                    <p class="text-slate-400 mb-12 text-lg">Bilgilerimiz üzerinden bize ulaşın, dakikalar içinde çözüm üretelim.</p>
+                    
+                    <div class="space-y-8">
+                        <!-- Phone -->
+                        <div class="flex items-start gap-5 group">
+                            <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-[#D36A28] transition-colors">
+                                <i class="fas fa-phone text-[#D36A28] group-hover:text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-1">Müşteri Hattı</p>
+                                <p class="text-xl font-bold">+90 (555) 000 00 00</p>
+                            </div>
+                        </div>
+                        <!-- Email -->
+                        <div class="flex items-start gap-5 group">
+                            <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-[#D36A28] transition-colors">
+                                <i class="fas fa-envelope text-[#D36A28] group-hover:text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-1">E-Posta</p>
+                                <p class="text-xl font-bold">bilgi@ustaeller.com</p>
+                            </div>
+                        </div>
+                        <!-- Location -->
+                        <div class="flex items-start gap-5 group">
+                            <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-[#D36A28] transition-colors">
+                                <i class="fas fa-map-marker-alt text-[#D36A28] group-hover:text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-1">Atölyemiz</p>
+                                <p class="text-xl font-bold">Merkez Mah. No:123, Kadıköy, İstanbul</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 w-full">
+                    <div class="bg-white p-8 sm:p-12 rounded-[2.5rem] shadow-2xl text-[#2D2E2F] text-center border-t-[8px] border-[#D36A28]">
+                        <div class="w-20 h-20 bg-[#25D366] rounded-3xl flex items-center justify-center mx-auto mb-8 text-white text-4xl">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <h3 class="text-3xl font-black mb-4">Hızlı Teklif Hattı</h3>
+                        <p class="text-[#5C5D5F] mb-10 leading-relaxed">Mesaj gönderin, 15 dakika içinde dönüş yapalım.</p>
+                        <a href="https://wa.me/905550000000?text=Merhaba,%20fiyat%20almak%20istiyorum." 
+                           target="_blank" 
+                           class="inline-block w-full py-5 bg-[#25D366] text-white rounded-2xl font-black text-xl hover:bg-[#128C7E] transition shadow-xl uppercase tracking-wide">
+                            WhatsApp Mesajı
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-white text-center border-t border-slate-100">
+        <div class="flex flex-col items-center">
+            <img src="images/logoahzır.png" alt="Logo" class="h-16 mb-4 opacity-70 hover:opacity-100 transition cursor-pointer">
+            <span class="text-2xl brand-text mb-4">USTA ELLER</span>
+            <p class="text-slate-500 text-sm font-medium">&copy; 2024 Usta Eller Profesyonel Restorasyon.</p>
+        </div>
+    </footer>
+
+    <script>
+        function moveSlider(slider, imgId, handleId, buttonId) {
+            const value = slider.value;
+            const img = document.getElementById(imgId);
+            const handle = document.getElementById(handleId);
+            const button = document.getElementById(buttonId);
+            img.style.clipPath = `polygon(0 0, ${value}% 0, ${value}% 100%, 0 100%)`;
+            handle.style.left = value + "%";
+            button.style.left = value + "%";
+        }
+
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slide');
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+        setInterval(nextSlide, 5000);
+    </script>
+</body>
+</html>
